@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+	<bean id="userProfileResourceImpl"
+		class="com.galaxe.products.app.resource.impl.UserProfileResourceImpl">
+		<property name="userProfileService" ref="userProfileServiceImplProxy" />
+	</bean>
+
+	<bean id="userProfileServiceImplProxy"
+		class="com.galaxe.products.app.service.impl.UserProfileServiceImpl">
+		<property name="businessEntAdapterService" ref="businessEntAdapterServiceProxy" />
+	</bean>
+
+	<bean id="businessEntAdapterServiceProxy"
+		class="com.galaxe.products.app.business.bo.BusinessEntAdapterService">
+		<property name="businessResource" ref="businessResourceProxy" />
+	</bean>
+
+
+
+
+	<bean id="businessResourceProxy"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="httpClient" />
+		<property name="targetMethod" value="resource" />
+		<property name="arguments">
+			<value>http://localhost:8080/UserProfileBusinessApp/businessapi/userprofile/authentication</value>
+		</property>
+	</bean>
+
+	<bean id="httpClient"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass"  value="com.sun.jersey.api.client.Client" />
+		<property name="targetMethod" value="create" />
+	</bean>
+
+	<!-- <bean id="setProxyHost" class="org.apache.commons.httpclient.HttpClient"> 
+		<constructor-arg index="0" type="java.lang.String" value="localhost" /> <constructor-arg 
+		index="1" type="int" value="8080" /> </bean> <bean id="businessResourceProxy1" 
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean"> 
+		<property name="serviceUrl" value="http://localhost:8080/UserProfileBusinessApp/businessapi/userprofile/authenticationget" 
+		/> <property name="serviceInterface"> <value>com.galaxe.enterprise.UserProfileBusinessInterface</value> 
+		</property> <property name="httpInvokerRequestExecutor"> <bean class="org.springframework.remoting.httpinvoker.HttpComponentsHttpInvokerRequestExecutor"> 
+		<property name="contentType" value="application/xml" /> </bean> </property> 
+		</bean> -->
+
+	<!-- <bean id="httpInvokerRequestExecutorPrxy" class="org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor"> 
+		<property name="contentType" value="application/xml" /> <property name="beanClassLoader" 
+		ref="beanClassLoaderPrxy"> </property> </bean> <bean id="beanClassLoaderPrxy" 
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> 
+		<property name="targetClass"><value>org.springframework.util.ClassUtils</value></property> 
+		<property name="targetMethod"> <value>getDefaultClassLoader</value> </property> 
+		</bean> -->
+	<!-- <bean id="businessResourceProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"> 
+		<property name="arguments"> <list> <array> <value>com.galaxe.service.app.business.resources.UserProfileBusinessResource</value> 
+		</array> <value> ${com.galaxe.service.app.business.resources.UserProfileBusinessResource.url} 
+		</value> </list> </property> </bean> -->
+</beans>

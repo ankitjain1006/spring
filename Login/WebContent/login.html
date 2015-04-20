@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login Module</title>
+
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+	   </script>
+
+
+<style>
+.aestric:after {
+	content: "*";
+	color: red;
+	size: 1px;
+}
+
+.required-focus {
+	border: 1px solid red;
+	outline: none;
+}
+
+.errMsg {
+	font-size: 12px;
+	color: red;
+}
+
+fieldset {
+	overflow: hidden;
+	float: left;
+	background-color: #eee;
+}
+
+legend {
+	color: #CC3366;
+}
+</style>
+
+
+
+<script>
+		
+		$(document).ready(function () {
+			
+			$("#submitBtn").click(function() {
+		
+				var isUserInputValid = true;
+				
+				$(".required").each(function() 
+				{
+					if($(this).val() == "")  {
+					    $(this).addClass("required-focus");
+					    isUserInputValid = false;
+					} else {
+						if( $(this).hasClass("required-focus") )  $(this).removeClass("required-focus") ; 
+					}
+					
+				});
+				
+				if(isUserInputValid == true) {
+				   execute_userAuthentication();   
+		        } else {
+		        	$("#errMsg").text("Highlighted fields cannot be left empty");
+		        }
+			});
+			
+			$("#resetBtn").click(function () {
+                $(".required").each(function() 
+                {
+                    if($(this).hasClass("required-focus")) {
+                    	
+                    	$(this).removeClass("required-focus");
+                    }
+                    
+                    $("#errMsg").text("");
+                });
+            });
+			
+		});
+		
+		
+		function execute_userAuthentication() {
+			
+	        var userName = $("#userText").val();
+	        var userPassword = $("#passText").val();
+			var userData = {"userName":userName,"userPassword":userPassword};
+			
+			paramObj.parameters = userData;
+			paramObj.serverUrl = UrlObject.validateUserAuthentication.url;
+			paramObj.dataType = UrlObject.validateUserAuthentication.dataType;
+	        paramObj.method = UrlObject.validateUserAuthentication.method || "GET";
+	        paramObj.contentType = UrlObject.validateUserAuthentication.contentType;
+            paramObj.processData = UrlObject.validateUserAuthentication.processData;
+            paramObj.onSuccess = draw_WelcomeScreen;
+	        paramObj.onFailure = draw_ErrorMessage;
+	    
+	        makeAjaxCalltoServer(paramObj);
+		}
+		
+		function draw_WelcomeScreen(result, status, xhr) {
+			 $("#divLoginForm").hide(function() {
+				 $("#hellodiv").html("<h3>hello! " + result.firstName + ' ' + result.lastName + "</h3>"); 
+			 });
+		}
+		
+		function draw_ErrorMessage(xhr, status, error) {
+			$("#errMsg").html("Oops! This is an error" + "<br> status = " + status + "<br> error = " + error);
+		}
+		
+		function makeAjaxCalltoServer(paramObj) {
+			$.ajax({url:paramObj.serverUrl, data:JSON.stringify(paramObj.parameters), type:paramObj.method, dataType:paramObj.dataType, contentType:paramObj.contentType, processData:paramObj.processData, success:paramObj.onSuccess, error:paramObj.onFailure});
+		}
+        
+		var paramObj = {}
+		var UrlObject = {"validateUserAuthentication":{"url":"http://localhost:8080/UserProfileApp/userprofileapi/userprofile/authentication", "method":"POST", "dataType":"JSON", "contentType":"application/json", "processData":false}}
+		
+		
+		</script>
+
+</head>
+
+<body>
+	<div id="hellodiv"></div>
+	<div id="divLoginForm">
+		<form name="frmLogin" method="Get" action="#">
+			<fieldset>
+				<legend>User Login</legend>
+				<div id="errMsg" class="errMsg"></div>
+				<table>
+					<tr>
+						<th valign="middle" align="right"><label class="aestric">User
+								Name:</label></th>
+						<td valign="middle" align="right">&nbsp;</td>
+						<td valign="middle" align="right"><input class="required"
+							type="text" id="userText" value=""></td>
+					</tr>
+					<tr>
+						<th valign="middle" align="right"><label class="aestric">Password:</label></th>
+						<td valign="middle" align="right">&nbsp;</td>
+						<td valign="middle" align="right"><input class="required"
+							type="password" id="passText" value=""></td>
+					</tr>
+					<tr>
+						<td colspan="3" valign="middle" align="right">&nbsp;</td>
+					</tr>
+					<tr>
+						<td valign="middle" align="center" colspan="2"><input
+							type="button" value="Submit" id="submitBtn"></td>
+						<td valign="middle" align="center"><input type="reset"
+							value="Reset" id="resetBtn"></td>
+					</tr>
+				</table>
+			</fieldset>
+		</form>
+	</div>
+</body>
+</html>
